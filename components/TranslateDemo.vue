@@ -1,7 +1,6 @@
 <template>
   <div class="flex flex-col gap-3">
 
-    <!-- Editable Polish sentence -->
     <div class="relative group">
       <textarea
         v-model="sentence"
@@ -15,29 +14,19 @@
       </div>
     </div>
 
-    <!-- Run button -->
     <div class="flex justify-center">
-      <button
-        @click="translateAll"
-        :disabled="loading || !sentence.trim()"
-        class="flex items-center gap-2 bg-gradient-to-br from-violet-600 to-indigo-600 rounded-xl text-white text-sm font-semibold py-2 px-8 cursor-pointer transition-all hover:opacity-85 hover:-translate-y-px disabled:opacity-40 disabled:cursor-not-allowed border-none"
-      >
-        <mdi-loading v-if="loading" class="animate-spin" />
-        <mdi-play v-else />
+      <RunButton :loading="loading" :disabled="!sentence.trim()" @click="translateAll">
         {{ loading ? 'Tłumaczę...' : 'Uruchom' }}
-      </button>
+      </RunButton>
     </div>
 
-    <!-- Results grid -->
     <div class="grid grid-cols-5 gap-2">
       <div
         v-for="(lang, i) in languages"
         :key="lang.name"
         class="rounded-xl p-2 border backdrop-blur-md min-h-[72px] flex flex-col gap-1 transition-all duration-300"
         :style="{ transitionDelay: lang.result ? `${i * 40}ms` : '0ms' }"
-        :class="lang.result
-          ? 'bg-emerald-500/8 border-emerald-500/30'
-          : 'bg-white/3 border-white/8'"
+        :class="lang.result ? 'bg-emerald-500/8 border-emerald-500/30' : 'bg-white/3 border-white/8'"
       >
         <div class="flex items-center gap-1 text-[10px] text-gray-400">
           <span>{{ lang.flag }}</span>
@@ -51,18 +40,15 @@
       </div>
     </div>
 
-    <div v-if="error" class="flex items-center gap-2 bg-red-500/8 border border-red-500/30 rounded-lg px-3 py-2 text-[10px] text-red-300">
-      <mdi-alert-circle class="text-red-400 flex-shrink-0" />
-      <span>{{ error }}</span>
-    </div>
+    <OllamaError :message="error" />
 
   </div>
 </template>
 
 <script setup>
 import { ref, reactive } from 'vue'
-import { Ollama } from 'ollama/browser'
 import { z } from 'zod'
+import { ollama, formatError } from '../composables/useOllama.js'
 
 const sentence = ref('Zawodnik strzelił gola w 90. minucie, zapewniając drużynie awans do finału mistrzostw.')
 
@@ -95,7 +81,6 @@ const LANGS = [
 const languages = reactive(LANGS.map(l => ({ ...l, result: '' })))
 const loading = ref(false)
 const error = ref('')
-const ollama = new Ollama()
 
 async function translateAll() {
   if (loading.value || !sentence.value.trim()) return
@@ -112,13 +97,10 @@ async function translateAll() {
         content: `Translate the following Polish sentence into all ten languages and return them as a JSON object with keys: english, german, french, spanish, italian, portuguese, japanese, chinese, arabic, russian.\n\nPolish: "${sentence.value}"`,
       }],
     })
-
     const parsed = TranslationsSchema.parse(JSON.parse(response.message.content))
     languages.forEach(lang => { lang.result = parsed[lang.key] ?? '' })
   } catch (e) {
-    error.value = e.message?.includes('fetch')
-      ? 'Nie można połączyć z Ollama. Czy serwer działa na localhost:11434?'
-      : e.message
+    error.value = formatError(e)
   } finally {
     loading.value = false
   }

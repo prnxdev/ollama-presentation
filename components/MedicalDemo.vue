@@ -1,7 +1,6 @@
 <template>
   <div class="grid grid-cols-2 gap-4 h-[340px]">
 
-    <!-- Left: controls -->
     <div class="flex flex-col gap-2">
       <div class="flex items-center gap-1 text-gray-500 text-[10px]">
         <mdi-medical-bag class="text-red-400" /> Przykładowe pytania
@@ -22,17 +21,13 @@
         rows="3"
       />
 
-      <button
+      <RunButton
+        :loading="loading"
+        :disabled="!inputText.trim()"
+        gradient="bg-gradient-to-br from-red-600 to-rose-900 text-xs"
         @click="ask"
-        :disabled="loading || !inputText.trim()"
-        class="flex items-center justify-center gap-2 bg-gradient-to-br from-red-600 to-rose-900 border-none rounded-lg text-white text-xs font-semibold py-2 px-4 cursor-pointer transition-all hover:opacity-85 hover:-translate-y-px disabled:opacity-40 disabled:cursor-not-allowed"
-      >
-        <mdi-play v-if="!loading" />
-        <mdi-loading v-else class="animate-spin" />
-        {{ loading ? 'Analizuję...' : 'Zapytaj Medgemma' }}
-      </button>
+      >{{ loading ? 'Analizuję...' : 'Zapytaj Medgemma' }}</RunButton>
 
-      <!-- Structured output display -->
       <div v-if="output" class="bg-emerald-500/8 border border-emerald-500/25 rounded-lg px-3 py-2 overflow-y-auto max-h-[80px] backdrop-blur-md flex flex-col gap-1">
         <div class="flex items-center gap-1 text-gray-500 text-[10px] mb-1">
           <mdi-check-circle class="text-green-400" /> Odpowiedź
@@ -47,40 +42,9 @@
         <p class="text-gray-500 text-[9px] italic mt-1">{{ output.disclaimer }}</p>
       </div>
 
-      <!-- Fullscreen overlay -->
-      <Teleport to="body">
-        <Transition name="fade">
-          <div
-            v-if="fullscreen && output"
-            class="fixed inset-0 z-50 flex items-center justify-center p-12"
-            style="background: rgba(0,0,0,0.85); backdrop-filter: blur(6px);"
-            @click.self="fullscreen = false"
-          >
-            <div class="bg-gray-900 border border-emerald-500/30 rounded-2xl p-8 max-w-2xl w-full max-h-[80vh] overflow-y-auto shadow-2xl">
-              <div class="flex items-center gap-2 mb-4">
-                <mdi-check-circle class="text-green-400 text-lg" />
-                <span class="text-gray-300 text-sm font-semibold">Odpowiedź</span>
-                <button @click="fullscreen = false" class="ml-auto bg-transparent border-none cursor-pointer text-gray-500 hover:text-white transition-colors p-0">
-                  <mdi-fullscreen-exit class="text-lg" />
-                </button>
-              </div>
-              <p class="text-white text-lg leading-relaxed mb-4">{{ output.summary }}</p>
-              <ul class="text-gray-200 text-base leading-relaxed pl-4 list-disc flex flex-col gap-2 mb-4">
-                <li v-for="point in output.key_points" :key="point">{{ point }}</li>
-              </ul>
-              <p class="text-gray-500 text-sm italic">{{ output.disclaimer }}</p>
-            </div>
-          </div>
-        </Transition>
-      </Teleport>
-
-      <div v-if="error" class="flex items-center gap-2 bg-red-500/8 border border-red-500/30 rounded-lg px-3 py-2 text-[10px] text-red-300 backdrop-blur-md">
-        <mdi-alert-circle class="text-red-400 flex-shrink-0" />
-        <span>{{ error }}</span>
-      </div>
+      <OllamaError :message="error" />
     </div>
 
-    <!-- Right: code -->
     <div class="bg-black/45 border border-white/8 rounded-xl p-3 overflow-y-auto backdrop-blur-md">
       <div class="flex items-center gap-1 text-gray-500 text-[10px] mb-2">
         <mdi-code-braces class="text-red-400" /> ollama SDK + Zod
@@ -111,12 +75,26 @@
     </div>
 
   </div>
+
+  <FullscreenOverlay v-model="fullscreen">
+    <template #header>
+      <mdi-check-circle class="text-green-400 text-lg" />
+      <span class="text-gray-300 text-sm font-semibold">Odpowiedź</span>
+    </template>
+    <template v-if="output">
+      <p class="text-white text-lg leading-relaxed mb-4">{{ output.summary }}</p>
+      <ul class="text-gray-200 text-base leading-relaxed pl-4 list-disc flex flex-col gap-2 mb-4">
+        <li v-for="point in output.key_points" :key="point">{{ point }}</li>
+      </ul>
+      <p class="text-gray-500 text-sm italic">{{ output.disclaimer }}</p>
+    </template>
+  </FullscreenOverlay>
 </template>
 
 <script setup>
 import { ref } from 'vue'
-import { Ollama } from 'ollama/browser'
 import { z } from 'zod'
+import { ollama, formatError } from '../composables/useOllama.js'
 
 const MedicalResponseSchema = z.object({
   summary:    z.string().default(''),
@@ -129,7 +107,6 @@ const output = ref(null)
 const error = ref('')
 const loading = ref(false)
 const fullscreen = ref(false)
-const ollama = new Ollama()
 
 const examples = [
   'Jakie są objawy cukrzycy typu 2?',
@@ -148,30 +125,16 @@ async function ask() {
       model: 'medgemma',
       format: z.toJSONSchema(MedicalResponseSchema),
       messages: [
-        {
-          role: 'system',
-          content: 'You are a medical AI assistant. Answer in Polish. Return a JSON with: summary (1-2 sentences), key_points (3-5 bullet facts), disclaimer (one sentence recommending a doctor).',
-        },
-        {
-          role: 'user',
-          content: inputText.value,
-        },
+        { role: 'system', content: 'You are a medical AI assistant. Answer in Polish. Return a JSON with: summary (1-2 sentences), key_points (3-5 bullet facts), disclaimer (one sentence recommending a doctor).' },
+        { role: 'user',   content: inputText.value },
       ],
     })
-
     output.value = MedicalResponseSchema.parse(JSON.parse(response.message.content))
     fullscreen.value = true
   } catch (e) {
-    error.value = e.message?.includes('fetch')
-      ? 'Nie można połączyć z Ollama. Czy serwer działa na localhost:11434?'
-      : e.message
+    error.value = formatError(e)
   } finally {
     loading.value = false
   }
 }
 </script>
-
-<style scoped>
-.fade-enter-active, .fade-leave-active { transition: opacity 0.2s ease; }
-.fade-enter-from, .fade-leave-to { opacity: 0; }
-</style>

@@ -35,37 +35,12 @@ background: /background.jpg
 </h1>
 
 <div class="grid grid-cols-3 gap-6 mt-10 text-center">
-
-<div v-click class="flex flex-col items-center gap-3 p-5 rounded-2xl bg-white/5 border border-white/10 hover:border-purple-400/40 transition-colors backdrop-blur-md">
-  <mdi-briefcase class="text-4xl text-blue-300" />
-  <span class="text-sm text-gray-300">Dane klientów</span>
-</div>
-
-<div v-click class="flex flex-col items-center gap-3 p-5 rounded-2xl bg-white/5 border border-white/10 hover:border-purple-400/40 transition-colors backdrop-blur-md">
-  <mdi-hospital-box class="text-4xl text-red-300" />
-  <span class="text-sm text-gray-300">Informacje medyczne</span>
-</div>
-
-<div v-click class="flex flex-col items-center gap-3 p-5 rounded-2xl bg-white/5 border border-white/10 hover:border-purple-400/40 transition-colors backdrop-blur-md">
-  <mdi-currency-usd class="text-4xl text-yellow-300" />
-  <span class="text-sm text-gray-300">Dane finansowe</span>
-</div>
-
-<div v-click class="flex flex-col items-center gap-3 p-5 rounded-2xl bg-white/5 border border-white/10 hover:border-purple-400/40 transition-colors backdrop-blur-md">
-  <mdi-source-branch class="text-4xl text-green-300" />
-  <span class="text-sm text-gray-300">Kod źródłowy</span>
-</div>
-
-<div v-click class="flex flex-col items-center gap-3 p-5 rounded-2xl bg-white/5 border border-white/10 hover:border-purple-400/40 transition-colors backdrop-blur-md">
-  <mdi-email-lock class="text-4xl text-orange-300" />
-  <span class="text-sm text-gray-300">Prywatna korespondencja</span>
-</div>
-
-<div v-click class="flex flex-col items-center gap-3 p-5 rounded-2xl bg-white/5 border border-white/10 hover:border-purple-400/40 transition-colors backdrop-blur-md">
-  <mdi-dots-horizontal class="text-4xl text-gray-400" />
-  <span class="text-sm text-gray-400">Coś jeszcze?</span>
-</div>
-
+  <IconCard v-click label="Dane klientów"><mdi-briefcase class="text-4xl text-blue-300" /></IconCard>
+  <IconCard v-click label="Informacje medyczne"><mdi-hospital-box class="text-4xl text-red-300" /></IconCard>
+  <IconCard v-click label="Dane finansowe"><mdi-currency-usd class="text-4xl text-yellow-300" /></IconCard>
+  <IconCard v-click label="Kod źródłowy"><mdi-source-branch class="text-4xl text-green-300" /></IconCard>
+  <IconCard v-click label="Prywatna korespondencja"><mdi-email-lock class="text-4xl text-orange-300" /></IconCard>
+  <IconCard v-click label="Coś jeszcze?"><mdi-dots-horizontal class="text-4xl text-gray-400" /></IconCard>
 </div>
 
 ---
@@ -84,25 +59,9 @@ background: /background.jpg
 </div>
 
 <div class="grid grid-cols-3 gap-8 text-center">
-
-<div v-click class="border border-red-500/40 rounded-xl p-6 bg-red-950/30 backdrop-blur-md">
-  <mdi-lock-open-variant class="text-4xl text-red-400 mb-3" />
-  <div class="font-bold text-lg">Prywatność</div>
-  <div class="text-gray-400 text-sm mt-2">Twoje dane trafiają na serwery zewnętrznych firm</div>
-</div>
-
-<div v-click class="border border-yellow-500/40 rounded-xl p-6 bg-yellow-950/30 backdrop-blur-md">
-  <mdi-credit-card class="text-4xl text-yellow-400 mb-3" />
-  <div class="font-bold text-lg">Koszt</div>
-  <div class="text-gray-400 text-sm mt-2">Miesięczne subskrypcje na każde narzędzie</div>
-</div>
-
-<div v-click class="border border-blue-500/40 rounded-xl p-6 bg-blue-950/30 backdrop-blur-md">
-  <mdi-wifi-off class="text-4xl text-blue-400 mb-3" />
-  <div class="font-bold text-lg">Brak internetu</div>
-  <div class="text-gray-400 text-sm mt-2">Bez połączenia nie ma AI</div>
-</div>
-
+  <ProblemCard v-click color="red"    title="Prywatność"    description="Twoje dane trafiają na serwery zewnętrznych firm"><mdi-lock-open-variant class="text-4xl text-red-400 mb-3" /></ProblemCard>
+  <ProblemCard v-click color="yellow" title="Koszt"         description="Miesięczne subskrypcje na każde narzędzie"><mdi-credit-card class="text-4xl text-yellow-400 mb-3" /></ProblemCard>
+  <ProblemCard v-click color="blue"   title="Brak internetu" description="Bez połączenia nie ma AI"><mdi-wifi-off class="text-4xl text-blue-400 mb-3" /></ProblemCard>
 </div>
 
 ---
@@ -232,50 +191,21 @@ background: /background.jpg
 # <mdi-puzzle class="text-green-400" /> Ollama w ekosystemie
 
 <div class="grid grid-cols-2 gap-4 mt-4">
-
-<div v-click class="flex gap-4 items-start border border-white/10 rounded-xl p-4 bg-white/3 hover:border-green-400/30 transition-colors backdrop-blur-md">
-  <mdi-code-greater-than class="text-3xl text-green-400 flex-shrink-0 mt-1" />
-  <div>
-    <div class="font-bold text-base mb-1">OpenCode</div>
-    <div class="text-gray-400 text-xs leading-relaxed">Terminalowy asystent kodowania — działa jak Cursor, ale lokalnie. Analizuje kod, naprawia błędy i pisze testy bez wysyłania kodu na zewnątrz.</div>
-  </div>
-</div>
-
-<div v-click class="flex gap-4 items-start border border-white/10 rounded-xl p-4 bg-white/3 hover:border-purple-400/30 transition-colors backdrop-blur-md">
-  <mdi-robot class="text-3xl text-purple-400 flex-shrink-0 mt-1" />
-  <div>
-    <div class="font-bold text-base mb-1">Hermes</div>
-    <div class="text-gray-400 text-xs leading-relaxed">Model od Nous Research zoptymalizowany pod agentów i wywoływanie funkcji. Idealny do budowania autonomicznych pipeline'ów AI działających lokalnie.</div>
-  </div>
-</div>
-
-<div v-click class="flex gap-4 items-start border border-white/10 rounded-xl p-4 bg-white/3 hover:border-orange-400/30 transition-colors backdrop-blur-md">
-  <span class="text-3xl flex-shrink-0 mt-1">🦀</span>
-  <div>
-    <div class="font-bold text-base mb-1">OpenClaw</div>
-    <div class="text-gray-400 text-xs leading-relaxed">Framework do budowania lokalnych agentów AI. Łączy Ollama z narzędziami, bazami danych i API — tworząc w pełni prywatne systemy agentowe.</div>
-  </div>
-</div>
-
-<div v-click class="flex gap-4 items-start border border-white/10 rounded-xl p-4 bg-white/3 hover:border-blue-400/30 transition-colors backdrop-blur-md">
-  <mdi-sitemap class="text-3xl text-blue-400 flex-shrink-0 mt-1" />
-  <div>
-    <div class="font-bold text-base mb-1">n8n</div>
-    <div class="text-gray-400 text-xs leading-relaxed">No-code automatyzacja przepływów pracy z wbudowaną obsługą Ollama. Twórz inteligentne pipeline'y bez pisania kodu — lokalnie i za darmo.</div>
-  </div>
-</div>
-
-<div v-click class="col-span-2 flex gap-4 items-start border border-teal-500/30 rounded-xl p-4 bg-teal-950/20 hover:border-teal-400/50 transition-colors backdrop-blur-md">
-  <mdi-home-assistant class="text-3xl text-teal-400 flex-shrink-0 mt-1" />
-  <div class="flex-1">
-    <div class="flex items-center gap-2 mb-1">
-      <div class="font-bold text-base">Home Assistant — Assist</div>
-      <span class="text-[10px] bg-teal-500/20 text-teal-300 border border-teal-500/30 rounded px-1.5 py-0.5">integracja natywna</span>
-    </div>
-    <div class="text-gray-400 text-xs leading-relaxed">Wbudowany asystent głosowy i tekstowy Home Assistant. Po dodaniu integracji <span class="text-teal-300 font-medium">Ollama</span> z HACS i wybraniu go jako <span class="text-white font-medium">Conversation Agent</span> — steruj inteligentnym domem komendami głosowymi napędzanymi przez lokalny model AI. Żadne dane nie opuszczają sieci domowej.</div>
-  </div>
-</div>
-
+  <EcosystemCard v-click title="OpenCode" description="Terminalowy asystent kodowania — działa jak Cursor, ale lokalnie. Analizuje kod, naprawia błędy i pisze testy bez wysyłania kodu na zewnątrz." class="hover:border-green-400/30">
+    <template #icon><mdi-code-greater-than class="text-3xl text-green-400 flex-shrink-0 mt-1" /></template>
+  </EcosystemCard>
+  <EcosystemCard v-click title="Hermes" description="Model od Nous Research zoptymalizowany pod agentów i wywoływanie funkcji. Idealny do budowania autonomicznych pipeline'ów AI działających lokalnie." class="hover:border-purple-400/30">
+    <template #icon><mdi-robot class="text-3xl text-purple-400 flex-shrink-0 mt-1" /></template>
+  </EcosystemCard>
+  <EcosystemCard v-click title="OpenClaw" description="Framework do budowania lokalnych agentów AI. Łączy Ollama z narzędziami, bazami danych i API — tworząc w pełni prywatne systemy agentowe." class="hover:border-orange-400/30">
+    <template #icon><span class="text-3xl flex-shrink-0 mt-1">🦀</span></template>
+  </EcosystemCard>
+  <EcosystemCard v-click title="n8n" description="No-code automatyzacja przepływów pracy z wbudowaną obsługą Ollama. Twórz inteligentne pipeline'y bez pisania kodu — lokalnie i za darmo." class="hover:border-blue-400/30">
+    <template #icon><mdi-sitemap class="text-3xl text-blue-400 flex-shrink-0 mt-1" /></template>
+  </EcosystemCard>
+  <EcosystemCard v-click title="Home Assistant — Assist" badge="integracja natywna" description="Wbudowany asystent głosowy i tekstowy Home Assistant. Po dodaniu integracji <span class='text-teal-300 font-medium'>Ollama</span> z HACS i wybraniu go jako <span class='text-white font-medium'>Conversation Agent</span> — steruj inteligentnym domem komendami głosowymi napędzanymi przez lokalny model AI. Żadne dane nie opuszczają sieci domowej." border-class="border-teal-500/30" bg-class="bg-teal-950/20" class="col-span-2 hover:border-teal-400/50">
+    <template #icon><mdi-home-assistant class="text-3xl text-teal-400 flex-shrink-0 mt-1" /></template>
+  </EcosystemCard>
 </div>
 
 ---
@@ -286,47 +216,13 @@ background: /background.jpg
 ## 🗣️ „Hej, włącz światła w salonie" — co się dzieje?
 
 <div class="flex items-stretch gap-2 mt-6 w-full">
-
-  <div class="flex-1 flex flex-col items-center gap-3 p-4 rounded-2xl border border-white/10 bg-white/3 backdrop-blur-md text-center">
-    <div class="text-4xl">🎤</div>
-    <div class="font-bold text-sm">Mówisz</div>
-    <div class="text-[11px] text-gray-400 leading-relaxed">Twój głos trafia do<br/>lokalnego mikrofonu</div>
-    <div class="mt-auto text-[9px] text-blue-300/80 bg-blue-950/30 rounded-lg px-2 py-1 w-full">Whisper — zamiana głosu na tekst</div>
-  </div>
-
-  <div class="flex items-center text-gray-600 flex-shrink-0">
-    <mdi-arrow-right class="text-2xl" />
-  </div>
-
-  <div class="flex-1 flex flex-col items-center gap-3 p-4 rounded-2xl border border-teal-500/25 bg-teal-950/15 backdrop-blur-md text-center">
-    <div class="text-4xl">🏠</div>
-    <div class="font-bold text-sm">Home Assistant<br/>odbiera tekst</div>
-    <div class="text-[11px] text-gray-400 leading-relaxed">Assist Pipeline<br/>kieruje zapytanie do AI</div>
-    <div class="mt-auto text-[9px] text-teal-300/80 bg-teal-950/30 rounded-lg px-2 py-1 w-full">Assist Pipeline — serce systemu</div>
-  </div>
-
-  <div class="flex items-center text-gray-600 flex-shrink-0">
-    <mdi-arrow-right class="text-2xl" />
-  </div>
-
-  <div class="flex-1 flex flex-col items-center gap-3 p-4 rounded-2xl border border-orange-500/25 bg-orange-950/15 backdrop-blur-md text-center">
-    <div class="text-4xl">🦙</div>
-    <div class="font-bold text-sm">Ollama rozumie<br/>i odpowiada</div>
-    <div class="text-[11px] text-gray-400 leading-relaxed">Lokalny model AI<br/>analizuje komendę</div>
-    <div class="mt-auto text-[9px] text-orange-300/80 bg-orange-950/30 rounded-lg px-2 py-1 w-full">Ollama — lokalny LLM, zero chmury</div>
-  </div>
-
-  <div class="flex items-center text-gray-600 flex-shrink-0">
-    <mdi-arrow-right class="text-2xl" />
-  </div>
-
-  <div class="flex-1 flex flex-col items-center gap-3 p-4 rounded-2xl border border-yellow-500/25 bg-yellow-950/15 backdrop-blur-md text-center">
-    <div class="text-4xl">💡</div>
-    <div class="font-bold text-sm">Dom reaguje,<br/>ty słyszysz</div>
-    <div class="text-[11px] text-gray-400 leading-relaxed">Światła się włączają<br/>i słyszysz potwierdzenie</div>
-    <div class="mt-auto text-[9px] text-violet-300/80 bg-violet-950/30 rounded-lg px-2 py-1 w-full">Piper — zamiana tekstu na głos</div>
-  </div>
-
+  <PipelineStep emoji="🎤" title="Mówisz" description="Twój głos trafia do<br/>lokalnego mikrofonu" badge="Whisper — zamiana głosu na tekst" card-class="border-white/10 bg-white/3" badge-class="text-blue-300/80 bg-blue-950/30" />
+  <div class="flex items-center text-gray-600 flex-shrink-0"><mdi-arrow-right class="text-2xl" /></div>
+  <PipelineStep emoji="🏠" title="Home Assistant<br/>odbiera tekst" description="Assist Pipeline<br/>kieruje zapytanie do AI" badge="Assist Pipeline — serce systemu" card-class="border-teal-500/25 bg-teal-950/15" badge-class="text-teal-300/80 bg-teal-950/30" />
+  <div class="flex items-center text-gray-600 flex-shrink-0"><mdi-arrow-right class="text-2xl" /></div>
+  <PipelineStep emoji="🦙" title="Ollama rozumie<br/>i odpowiada" description="Lokalny model AI<br/>analizuje komendę" badge="Ollama — lokalny LLM, zero chmury" card-class="border-orange-500/25 bg-orange-950/15" badge-class="text-orange-300/80 bg-orange-950/30" />
+  <div class="flex items-center text-gray-600 flex-shrink-0"><mdi-arrow-right class="text-2xl" /></div>
+  <PipelineStep emoji="💡" title="Dom reaguje,<br/>ty słyszysz" description="Światła się włączają<br/>i słyszysz potwierdzenie" badge="Piper — zamiana tekstu na głos" card-class="border-yellow-500/25 bg-yellow-950/15" badge-class="text-violet-300/80 bg-violet-950/30" />
 </div>
 
 <div class="mt-5 text-center text-xs text-gray-500 flex items-center justify-center gap-2">
