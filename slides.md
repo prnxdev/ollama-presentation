@@ -186,7 +186,7 @@ zoom: 0.9
 
 # <mdi-medical-bag class="text-red-400" /> Ollama w akcji — medgemma
 
-<MeditronDemo class="mt-2" />
+<MedicalDemo class="mt-2" />
 
 ---
 layout: center
