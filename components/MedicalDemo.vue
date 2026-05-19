@@ -33,9 +33,12 @@
       </button>
 
       <!-- Structured output display -->
-      <div v-if="output" class="bg-emerald-500/8 border border-emerald-500/25 rounded-lg px-3 py-2 overflow-y-auto flex-1 backdrop-blur-md flex flex-col gap-1">
+      <div v-if="output" class="bg-emerald-500/8 border border-emerald-500/25 rounded-lg px-3 py-2 overflow-y-auto max-h-[80px] backdrop-blur-md flex flex-col gap-1">
         <div class="flex items-center gap-1 text-gray-500 text-[10px] mb-1">
           <mdi-check-circle class="text-green-400" /> Odpowiedź
+          <button @click="fullscreen = true" class="ml-auto bg-transparent border-none cursor-pointer text-gray-500 hover:text-white transition-colors p-0">
+            <mdi-fullscreen class="text-sm" />
+          </button>
         </div>
         <p class="text-white text-[11px] leading-snug">{{ output.summary }}</p>
         <ul class="text-gray-200 text-[10px] leading-relaxed pl-3 list-disc flex flex-col gap-0.5">
@@ -43,6 +46,33 @@
         </ul>
         <p class="text-gray-500 text-[9px] italic mt-1">{{ output.disclaimer }}</p>
       </div>
+
+      <!-- Fullscreen overlay -->
+      <Teleport to="body">
+        <Transition name="fade">
+          <div
+            v-if="fullscreen && output"
+            class="fixed inset-0 z-50 flex items-center justify-center p-12"
+            style="background: rgba(0,0,0,0.85); backdrop-filter: blur(6px);"
+            @click.self="fullscreen = false"
+          >
+            <div class="bg-gray-900 border border-emerald-500/30 rounded-2xl p-8 max-w-2xl w-full max-h-[80vh] overflow-y-auto shadow-2xl">
+              <div class="flex items-center gap-2 mb-4">
+                <mdi-check-circle class="text-green-400 text-lg" />
+                <span class="text-gray-300 text-sm font-semibold">Odpowiedź</span>
+                <button @click="fullscreen = false" class="ml-auto bg-transparent border-none cursor-pointer text-gray-500 hover:text-white transition-colors p-0">
+                  <mdi-fullscreen-exit class="text-lg" />
+                </button>
+              </div>
+              <p class="text-white text-lg leading-relaxed mb-4">{{ output.summary }}</p>
+              <ul class="text-gray-200 text-base leading-relaxed pl-4 list-disc flex flex-col gap-2 mb-4">
+                <li v-for="point in output.key_points" :key="point">{{ point }}</li>
+              </ul>
+              <p class="text-gray-500 text-sm italic">{{ output.disclaimer }}</p>
+            </div>
+          </div>
+        </Transition>
+      </Teleport>
 
       <div v-if="error" class="flex items-center gap-2 bg-red-500/8 border border-red-500/30 rounded-lg px-3 py-2 text-[10px] text-red-300 backdrop-blur-md">
         <mdi-alert-circle class="text-red-400 flex-shrink-0" />
@@ -98,6 +128,7 @@ const inputText = ref('')
 const output = ref(null)
 const error = ref('')
 const loading = ref(false)
+const fullscreen = ref(false)
 const ollama = new Ollama()
 
 const examples = [
@@ -129,6 +160,7 @@ async function ask() {
     })
 
     output.value = MedicalResponseSchema.parse(JSON.parse(response.message.content))
+    fullscreen.value = true
   } catch (e) {
     error.value = e.message?.includes('fetch')
       ? 'Nie można połączyć z Ollama. Czy serwer działa na localhost:11434?'
@@ -138,3 +170,8 @@ async function ask() {
   }
 }
 </script>
+
+<style scoped>
+.fade-enter-active, .fade-leave-active { transition: opacity 0.2s ease; }
+.fade-enter-from, .fade-leave-to { opacity: 0; }
+</style>
