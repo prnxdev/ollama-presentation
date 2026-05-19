@@ -279,6 +279,62 @@ background: /background.jpg
 </div>
 
 ---
+layout: center
+background: /background.jpg
+---
+
+## 🗣️ „Hej, włącz światła w salonie" — co się dzieje?
+
+<div class="flex items-stretch gap-2 mt-6 w-full">
+
+  <div class="flex-1 flex flex-col items-center gap-3 p-4 rounded-2xl border border-white/10 bg-white/3 backdrop-blur-md text-center">
+    <div class="text-4xl">🎤</div>
+    <div class="font-bold text-sm">Mówisz</div>
+    <div class="text-[11px] text-gray-400 leading-relaxed">Twój głos trafia do<br/>lokalnego mikrofonu</div>
+    <div class="mt-auto text-[9px] text-blue-300/80 bg-blue-950/30 rounded-lg px-2 py-1 w-full">Whisper — zamiana głosu na tekst</div>
+  </div>
+
+  <div class="flex items-center text-gray-600 flex-shrink-0">
+    <mdi-arrow-right class="text-2xl" />
+  </div>
+
+  <div class="flex-1 flex flex-col items-center gap-3 p-4 rounded-2xl border border-teal-500/25 bg-teal-950/15 backdrop-blur-md text-center">
+    <div class="text-4xl">🏠</div>
+    <div class="font-bold text-sm">Home Assistant<br/>odbiera tekst</div>
+    <div class="text-[11px] text-gray-400 leading-relaxed">Assist Pipeline<br/>kieruje zapytanie do AI</div>
+    <div class="mt-auto text-[9px] text-teal-300/80 bg-teal-950/30 rounded-lg px-2 py-1 w-full">Assist Pipeline — serce systemu</div>
+  </div>
+
+  <div class="flex items-center text-gray-600 flex-shrink-0">
+    <mdi-arrow-right class="text-2xl" />
+  </div>
+
+  <div class="flex-1 flex flex-col items-center gap-3 p-4 rounded-2xl border border-orange-500/25 bg-orange-950/15 backdrop-blur-md text-center">
+    <div class="text-4xl">🦙</div>
+    <div class="font-bold text-sm">Ollama rozumie<br/>i odpowiada</div>
+    <div class="text-[11px] text-gray-400 leading-relaxed">Lokalny model AI<br/>analizuje komendę</div>
+    <div class="mt-auto text-[9px] text-orange-300/80 bg-orange-950/30 rounded-lg px-2 py-1 w-full">Ollama — lokalny LLM, zero chmury</div>
+  </div>
+
+  <div class="flex items-center text-gray-600 flex-shrink-0">
+    <mdi-arrow-right class="text-2xl" />
+  </div>
+
+  <div class="flex-1 flex flex-col items-center gap-3 p-4 rounded-2xl border border-yellow-500/25 bg-yellow-950/15 backdrop-blur-md text-center">
+    <div class="text-4xl">💡</div>
+    <div class="font-bold text-sm">Dom reaguje,<br/>ty słyszysz</div>
+    <div class="text-[11px] text-gray-400 leading-relaxed">Światła się włączają<br/>i słyszysz potwierdzenie</div>
+    <div class="mt-auto text-[9px] text-violet-300/80 bg-violet-950/30 rounded-lg px-2 py-1 w-full">Piper — zamiana tekstu na głos</div>
+  </div>
+
+</div>
+
+<div class="mt-5 text-center text-xs text-gray-500 flex items-center justify-center gap-2">
+  <mdi-shield-check class="text-green-400 text-base" />
+  Całość działa lokalnie — żadne dane nie opuszczają sieci domowej
+</div>
+
+---
 background: /background.jpg
 ---
 
