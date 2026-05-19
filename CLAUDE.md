@@ -24,6 +24,11 @@ npm run build    # Build static site
 npm run export   # Export to PDF (requires playwright-chromium)
 ```
 
+## Git Commits
+
+- **Always use conventional commits**: `type(scope): description` — types: `feat`, `fix`, `docs`, `style`, `refactor`, `chore`, `test`
+- **Always ask for approval before committing**: propose the commit message and wait for the user to confirm before running `git commit`
+
 ## Design Decisions
 
 - Theme: `seriph` (dark)
