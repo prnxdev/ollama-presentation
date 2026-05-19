@@ -73,8 +73,8 @@ components/
   cards/                # karty reużywalne w slajdach
   demo/                 # komponenty live demo (TranslateDemo, MedicalDemo)
   ui/                   # prymitywy UI (RunButton, OllamaError, FullscreenOverlay)
-composables/
-  useOllama.ts          # singleton klienta Ollama + formatError()
+utils/
+  ollama.ts             # singleton klienta Ollama + formatError()
 public/
   background.jpg        # tło slajdów
 ```
