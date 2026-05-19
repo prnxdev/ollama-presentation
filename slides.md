@@ -172,12 +172,12 @@ background: /background.jpg
 
 ---
 background: /background.jpg
-zoom: 0.9
+zoom: 0.85
 ---
 
 # <mdi-translate class="text-purple-400" /> Ollama w akcji — tłumaczenie
 
-<TranslateDemo class="mt-2" />
+<TranslateDemo class="mt-3" />
 
 ---
 background: /background.jpg
