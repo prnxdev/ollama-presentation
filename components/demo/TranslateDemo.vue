@@ -48,7 +48,7 @@
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
 import { z } from 'zod'
-import { ollama, formatError } from '../../composables/useOllama.ts'
+import { ollama, formatError } from '../../utils/ollama.ts'
 
 const sentence = ref('Zawodnik strzelił gola w 90. minucie, zapewniając drużynie awans do finału mistrzostw.')
 
