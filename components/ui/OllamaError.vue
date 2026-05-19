@@ -5,6 +5,6 @@
   </div>
 </template>
 
-<script setup>
-defineProps({ message: String })
+<script setup lang="ts">
+defineProps<{ message?: string }>()
 </script>

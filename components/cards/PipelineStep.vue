@@ -9,13 +9,15 @@
   </div>
 </template>
 
-<script setup>
-defineProps({
-  emoji: String,
-  title: String,
-  description: String,
-  badge: String,
-  cardClass:  { type: String, default: 'border-white/10 bg-white/3' },
-  badgeClass: String,
+<script setup lang="ts">
+withDefaults(defineProps<{
+  emoji: string
+  title: string
+  description: string
+  badge: string
+  cardClass?: string
+  badgeClass?: string
+}>(), {
+  cardClass: 'border-white/10 bg-white/3',
 })
 </script>

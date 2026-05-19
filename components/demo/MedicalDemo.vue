@@ -91,10 +91,10 @@
   </FullscreenOverlay>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
 import { z } from 'zod'
-import { ollama, formatError } from '../composables/useOllama.js'
+import { ollama, formatError } from '../../composables/useOllama.ts'
 
 const MedicalResponseSchema = z.object({
   summary:    z.string().default(''),
@@ -103,7 +103,8 @@ const MedicalResponseSchema = z.object({
 })
 
 const inputText = ref('')
-const output = ref(null)
+interface MedicalOutput { summary: string; key_points: string[]; disclaimer: string }
+const output = ref<MedicalOutput | null>(null)
 const error = ref('')
 const loading = ref(false)
 const fullscreen = ref(false)

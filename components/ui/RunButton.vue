@@ -11,11 +11,13 @@
   </button>
 </template>
 
-<script setup>
-defineProps({
-  loading: Boolean,
-  disabled: Boolean,
-  gradient: { type: String, default: 'bg-gradient-to-br from-violet-600 to-indigo-600 text-sm' },
+<script setup lang="ts">
+withDefaults(defineProps<{
+  loading?: boolean
+  disabled?: boolean
+  gradient?: string
+}>(), {
+  gradient: 'bg-gradient-to-br from-violet-600 to-indigo-600 text-sm',
 })
-defineEmits(['click'])
+defineEmits<{ click: [] }>()
 </script>

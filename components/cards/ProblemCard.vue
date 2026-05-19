@@ -6,14 +6,16 @@
   </div>
 </template>
 
-<script setup>
-defineProps({
-  color:       { type: String, default: 'red' },
-  title:       String,
-  description: String,
-})
+<script setup lang="ts">
+type Color = 'red' | 'yellow' | 'blue'
 
-const colors = {
+withDefaults(defineProps<{
+  color?: Color
+  title: string
+  description: string
+}>(), { color: 'red' })
+
+const colors: Record<Color, { border: string; bg: string }> = {
   red:    { border: 'border-red-500/40',    bg: 'bg-red-950/30'    },
   yellow: { border: 'border-yellow-500/40', bg: 'bg-yellow-950/30' },
   blue:   { border: 'border-blue-500/40',   bg: 'bg-blue-950/30'   },

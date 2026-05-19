@@ -15,12 +15,15 @@
   </div>
 </template>
 
-<script setup>
-defineProps({
-  title: String,
-  description: String,
-  badge: String,
-  borderClass: { type: String, default: 'border-white/10' },
-  bgClass:     { type: String, default: 'bg-white/3' },
+<script setup lang="ts">
+withDefaults(defineProps<{
+  title: string
+  description: string
+  badge?: string
+  borderClass?: string
+  bgClass?: string
+}>(), {
+  borderClass: 'border-white/10',
+  bgClass: 'bg-white/3',
 })
 </script>

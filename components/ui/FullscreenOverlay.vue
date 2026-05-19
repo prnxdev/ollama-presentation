@@ -21,9 +21,9 @@
   </Teleport>
 </template>
 
-<script setup>
-defineProps({ modelValue: Boolean })
-defineEmits(['update:modelValue'])
+<script setup lang="ts">
+defineProps<{ modelValue?: boolean }>()
+defineEmits<{ 'update:modelValue': [value: boolean] }>()
 </script>
 
 <style scoped>
