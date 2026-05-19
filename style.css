@@ -1,0 +1,5 @@
+.slidev-layout {
+  background-image: url('/background.jpg') !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
