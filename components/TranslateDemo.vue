@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col gap-3">
 
-    <!-- Big Polish sentence (editable) -->
+    <!-- Editable Polish sentence -->
     <div class="relative group">
       <textarea
         v-model="sentence"
@@ -31,24 +31,22 @@
     <!-- Results grid -->
     <div class="grid grid-cols-5 gap-2">
       <div
-        v-for="lang in languages"
+        v-for="(lang, i) in languages"
         :key="lang.name"
-        class="rounded-xl p-2 border transition-all duration-500 backdrop-blur-md min-h-[72px] flex flex-col gap-1"
+        class="rounded-xl p-2 border backdrop-blur-md min-h-[72px] flex flex-col gap-1 transition-all duration-300"
+        :style="{ transitionDelay: lang.result ? `${i * 40}ms` : '0ms' }"
         :class="lang.result
           ? 'bg-emerald-500/8 border-emerald-500/30'
-          : lang.loading
-            ? 'bg-white/5 border-purple-400/40'
-            : 'bg-white/3 border-white/8'"
+          : 'bg-white/3 border-white/8'"
       >
         <div class="flex items-center gap-1 text-[10px] text-gray-400">
           <span>{{ lang.flag }}</span>
           <span>{{ lang.name }}</span>
-          <mdi-loading v-if="lang.loading" class="animate-spin ml-auto text-purple-400" />
-          <mdi-check-circle v-else-if="lang.result" class="ml-auto text-emerald-400" />
+          <mdi-check-circle v-if="lang.result" class="ml-auto text-emerald-400" />
         </div>
         <div class="text-white text-[11px] leading-snug flex-1">
           <span v-if="lang.result">{{ lang.result }}</span>
-          <span v-else-if="!lang.loading && !started" class="text-gray-600">—</span>
+          <span v-else class="text-gray-600">—</span>
         </div>
       </div>
     </div>
@@ -63,67 +61,66 @@
 
 <script setup>
 import { ref, reactive } from 'vue'
+import { Ollama } from 'ollama/browser'
+import { z } from 'zod'
 
 const sentence = ref('Zawodnik strzelił gola w 90. minucie, zapewniając drużynie awans do finału mistrzostw.')
 
+const TranslationsSchema = z.object({
+  english:    z.string().default(''),
+  german:     z.string().default(''),
+  french:     z.string().default(''),
+  spanish:    z.string().default(''),
+  italian:    z.string().default(''),
+  portuguese: z.string().default(''),
+  japanese:   z.string().default(''),
+  chinese:    z.string().default(''),
+  arabic:     z.string().default(''),
+  russian:    z.string().default(''),
+})
+
 const LANGS = [
-  { name: 'English',    flag: '🇬🇧', code: 'English' },
-  { name: 'German',     flag: '🇩🇪', code: 'German' },
-  { name: 'French',     flag: '🇫🇷', code: 'French' },
-  { name: 'Spanish',    flag: '🇪🇸', code: 'Spanish' },
-  { name: 'Italian',    flag: '🇮🇹', code: 'Italian' },
-  { name: 'Portuguese', flag: '🇵🇹', code: 'Portuguese' },
-  { name: 'Japanese',   flag: '🇯🇵', code: 'Japanese' },
-  { name: 'Chinese',    flag: '🇨🇳', code: 'Chinese' },
-  { name: 'Arabic',     flag: '🇸🇦', code: 'Arabic' },
-  { name: 'Russian',    flag: '🇷🇺', code: 'Russian' },
+  { name: 'English',    flag: '🇬🇧', key: 'english' },
+  { name: 'German',     flag: '🇩🇪', key: 'german' },
+  { name: 'French',     flag: '🇫🇷', key: 'french' },
+  { name: 'Spanish',    flag: '🇪🇸', key: 'spanish' },
+  { name: 'Italian',    flag: '🇮🇹', key: 'italian' },
+  { name: 'Portuguese', flag: '🇵🇹', key: 'portuguese' },
+  { name: 'Japanese',   flag: '🇯🇵', key: 'japanese' },
+  { name: 'Chinese',    flag: '🇨🇳', key: 'chinese' },
+  { name: 'Arabic',     flag: '🇸🇦', key: 'arabic' },
+  { name: 'Russian',    flag: '🇷🇺', key: 'russian' },
 ]
 
-const languages = reactive(LANGS.map(l => ({ ...l, result: '', loading: false })))
+const languages = reactive(LANGS.map(l => ({ ...l, result: '' })))
 const loading = ref(false)
-const started = ref(false)
 const error = ref('')
-
-async function translateOne(lang) {
-  lang.loading = true
-  lang.result = ''
-  try {
-    const res = await fetch('http://localhost:11434/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'translategemma',
-        stream: false,
-        messages: [{
-          role: 'user',
-          content: `Translate the following Polish text to ${lang.code}. Return only the translation, no explanations:\n\n${sentence.value}`
-        }]
-      })
-    })
-    if (!res.ok) throw new Error(`HTTP ${res.status}`)
-    const data = await res.json()
-    lang.result = data.message?.content?.trim() ?? ''
-  } catch (e) {
-    lang.result = '⚠ błąd'
-    if (!error.value) {
-      error.value = e.message.includes('fetch')
-        ? 'Nie można połączyć z Ollama. Czy serwer działa na localhost:11434?'
-        : e.message
-    }
-  } finally {
-    lang.loading = false
-  }
-}
+const ollama = new Ollama()
 
 async function translateAll() {
   if (loading.value || !sentence.value.trim()) return
   loading.value = true
-  started.value = true
   error.value = ''
-  languages.forEach(l => { l.result = ''; l.loading = false })
+  languages.forEach(l => { l.result = '' })
 
-  await Promise.all(languages.map(lang => translateOne(lang)))
+  try {
+    const response = await ollama.chat({
+      model: 'translategemma',
+      format: z.toJSONSchema(TranslationsSchema),
+      messages: [{
+        role: 'user',
+        content: `Translate the following Polish sentence into all ten languages and return them as a JSON object with keys: english, german, french, spanish, italian, portuguese, japanese, chinese, arabic, russian.\n\nPolish: "${sentence.value}"`,
+      }],
+    })
 
-  loading.value = false
+    const parsed = TranslationsSchema.parse(JSON.parse(response.message.content))
+    languages.forEach(lang => { lang.result = parsed[lang.key] ?? '' })
+  } catch (e) {
+    error.value = e.message?.includes('fetch')
+      ? 'Nie można połączyć z Ollama. Czy serwer działa na localhost:11434?'
+      : e.message
+  } finally {
+    loading.value = false
+  }
 }
 </script>

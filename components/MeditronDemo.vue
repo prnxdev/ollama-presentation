@@ -32,11 +32,16 @@
         {{ loading ? 'Analizuję...' : 'Zapytaj Medgemma' }}
       </button>
 
-      <div v-if="output" class="bg-emerald-500/8 border border-emerald-500/25 rounded-lg px-3 py-2 overflow-y-auto max-h-[120px] backdrop-blur-md">
+      <!-- Structured output display -->
+      <div v-if="output" class="bg-emerald-500/8 border border-emerald-500/25 rounded-lg px-3 py-2 overflow-y-auto flex-1 backdrop-blur-md flex flex-col gap-1">
         <div class="flex items-center gap-1 text-gray-500 text-[10px] mb-1">
           <mdi-check-circle class="text-green-400" /> Odpowiedź
         </div>
-        <div class="markdown-output" v-html="parsedOutput" />
+        <p class="text-white text-[11px] leading-snug">{{ output.summary }}</p>
+        <ul class="text-gray-200 text-[10px] leading-relaxed pl-3 list-disc flex flex-col gap-0.5">
+          <li v-for="point in output.key_points" :key="point">{{ point }}</li>
+        </ul>
+        <p class="text-gray-500 text-[9px] italic mt-1">{{ output.disclaimer }}</p>
       </div>
 
       <div v-if="error" class="flex items-center gap-2 bg-red-500/8 border border-red-500/30 rounded-lg px-3 py-2 text-[10px] text-red-300 backdrop-blur-md">
@@ -48,41 +53,52 @@
     <!-- Right: code -->
     <div class="bg-black/45 border border-white/8 rounded-xl p-3 overflow-y-auto backdrop-blur-md">
       <div class="flex items-center gap-1 text-gray-500 text-[10px] mb-2">
-        <mdi-code-braces class="text-red-400" /> ollama SDK
+        <mdi-code-braces class="text-red-400" /> ollama SDK + Zod
       </div>
-      <pre class="font-mono text-[11px] leading-relaxed m-0 whitespace-pre-wrap break-words"><span class="text-blue-300">import</span> ollama <span class="text-blue-300">from</span> <span class="text-green-300">'ollama'</span>
+      <pre class="font-mono text-[11px] leading-relaxed m-0 whitespace-pre-wrap break-words"><span class="text-blue-300">import</span> { Ollama } <span class="text-blue-300">from</span> <span class="text-green-300">'ollama/browser'</span>
+<span class="text-blue-300">import</span> { z } <span class="text-blue-300">from</span> <span class="text-green-300">'zod'</span>
 
-<span class="text-blue-300">const</span> response = <span class="text-yellow-200">await</span> ollama.<span class="text-sky-300">chat</span>({
-  model: <span class="text-green-300">'medgemma'</span>,
-  messages: [
-    {
-      role: <span class="text-green-300">'system'</span>,
-      content: <span class="text-green-300">'You are a medical AI assistant.
-Answer based on clinical evidence.
-Always recommend consulting a doctor.'</span>
-    },
-    {
-      role: <span class="text-green-300">'user'</span>,
-      content: <span class="text-green-300">'<span class="text-orange-300">{{ inputText || "Pytanie medyczne..." }}</span>'</span>
-    }
-  ]
+<span class="text-blue-300">const</span> Schema = z.<span class="text-sky-300">object</span>({
+  summary:    z.<span class="text-sky-300">string</span>(),
+  key_points: z.<span class="text-sky-300">array</span>(z.<span class="text-sky-300">string</span>()),
+  disclaimer: z.<span class="text-sky-300">string</span>(),
 })
 
-<span class="text-gray-500">// response.message.content:</span>
-<span class="text-green-300">"<span class="text-orange-300">{{ truncated }}</span>"</span></pre>
+<span class="text-blue-300">const</span> ollama = <span class="text-yellow-200">new</span> <span class="text-sky-300">Ollama</span>()
+<span class="text-blue-300">const</span> res = <span class="text-yellow-200">await</span> ollama.<span class="text-sky-300">chat</span>({
+  model:  <span class="text-green-300">'medgemma'</span>,
+  format: z.<span class="text-sky-300">toJSONSchema</span>(Schema),
+  messages: [
+    { role: <span class="text-green-300">'system'</span>, content: <span class="text-green-300">'...'</span> },
+    { role: <span class="text-green-300">'user'</span>,   content: <span class="text-orange-300">question</span> },
+  ],
+})
+
+<span class="text-blue-300">const</span> data = Schema.<span class="text-sky-300">parse</span>(
+  <span class="text-sky-300">JSON</span>.<span class="text-sky-300">parse</span>(res.message.content)
+)
+<span class="text-gray-500">// data.summary, data.key_points, data.disclaimer</span></pre>
     </div>
 
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import { marked } from 'marked'
+import { ref } from 'vue'
+import { Ollama } from 'ollama/browser'
+import { z } from 'zod'
+
+const MedicalResponseSchema = z.object({
+  summary:    z.string().default(''),
+  key_points: z.array(z.string()).default([]),
+  disclaimer: z.string().default(''),
+})
 
 const inputText = ref('')
-const output = ref('')
+const output = ref(null)
 const error = ref('')
 const loading = ref(false)
+const ollama = new Ollama()
 
 const examples = [
   'Jakie są objawy cukrzycy typu 2?',
@@ -90,44 +106,31 @@ const examples = [
   'Jaka jest różnica między MRI a tomografią komputerową?',
 ]
 
-const parsedOutput = computed(() => marked.parse(output.value || ''))
-
-const truncated = computed(() => {
-  if (!output.value) return '...'
-  return output.value.length > 60 ? output.value.slice(0, 60) + '...' : output.value
-})
-
 async function ask() {
   if (!inputText.value.trim()) return
   loading.value = true
-  output.value = ''
+  output.value = null
   error.value = ''
 
   try {
-    const res = await fetch('http://localhost:11434/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'medgemma',
-        stream: false,
-        messages: [
-          {
-            role: 'system',
-            content: 'You are a medical AI assistant. Answer based on clinical evidence. Always recommend consulting a doctor.'
-          },
-          {
-            role: 'user',
-            content: inputText.value
-          }
-        ]
-      })
+    const response = await ollama.chat({
+      model: 'medgemma',
+      format: z.toJSONSchema(MedicalResponseSchema),
+      messages: [
+        {
+          role: 'system',
+          content: 'You are a medical AI assistant. Answer in Polish. Return a JSON with: summary (1-2 sentences), key_points (3-5 bullet facts), disclaimer (one sentence recommending a doctor).',
+        },
+        {
+          role: 'user',
+          content: inputText.value,
+        },
+      ],
     })
 
-    if (!res.ok) throw new Error(`HTTP ${res.status}`)
-    const data = await res.json()
-    output.value = data.message?.content ?? ''
+    output.value = MedicalResponseSchema.parse(JSON.parse(response.message.content))
   } catch (e) {
-    error.value = e.message.includes('fetch')
+    error.value = e.message?.includes('fetch')
       ? 'Nie można połączyć z Ollama. Czy serwer działa na localhost:11434?'
       : e.message
   } finally {
@@ -135,18 +138,3 @@ async function ask() {
   }
 }
 </script>
-
-<style scoped>
-.markdown-output {
-  font-size: 11px;
-  line-height: 1.6;
-  color: white;
-}
-.markdown-output :deep(p) { margin: 0 0 4px; }
-.markdown-output :deep(ul), .markdown-output :deep(ol) { margin: 2px 0; padding-left: 16px; }
-.markdown-output :deep(li) { margin: 1px 0; }
-.markdown-output :deep(strong) { color: #e2e8f0; font-weight: 600; }
-.markdown-output :deep(em) { color: #cbd5e1; }
-.markdown-output :deep(code) { background: rgba(255,255,255,0.1); border-radius: 3px; padding: 1px 4px; font-size: 10px; }
-.markdown-output :deep(h1), .markdown-output :deep(h2), .markdown-output :deep(h3) { font-size: 12px; font-weight: 600; margin: 4px 0 2px; color: #a7f3d0; }
-</style>

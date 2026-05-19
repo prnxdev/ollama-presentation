@@ -21,6 +21,9 @@
     "@iconify-json/carbon": "^1.2.21",
     "@iconify-json/mdi": "^1.2.3",
     "marked": "^18.0.3",
-    "qrcode": "^1.5.4"
+    "ollama": "^0.6.3",
+    "qrcode": "^1.5.4",
+    "zod": "^4.4.3",
+    "zod-to-json-schema": "^3.25.2"
   }
 }
