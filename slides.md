@@ -265,6 +265,17 @@ background: /background.jpg
   </div>
 </div>
 
+<div v-click class="col-span-2 flex gap-4 items-start border border-teal-500/30 rounded-xl p-4 bg-teal-950/20 hover:border-teal-400/50 transition-colors backdrop-blur-md">
+  <mdi-home-assistant class="text-3xl text-teal-400 flex-shrink-0 mt-1" />
+  <div class="flex-1">
+    <div class="flex items-center gap-2 mb-1">
+      <div class="font-bold text-base">Home Assistant — Assist</div>
+      <span class="text-[10px] bg-teal-500/20 text-teal-300 border border-teal-500/30 rounded px-1.5 py-0.5">integracja natywna</span>
+    </div>
+    <div class="text-gray-400 text-xs leading-relaxed">Wbudowany asystent głosowy i tekstowy Home Assistant. Po dodaniu integracji <span class="text-teal-300 font-medium">Ollama</span> z HACS i wybraniu go jako <span class="text-white font-medium">Conversation Agent</span> — steruj inteligentnym domem komendami głosowymi napędzanymi przez lokalny model AI. Żadne dane nie opuszczają sieci domowej.</div>
+  </div>
+</div>
+
 </div>
 
 ---
